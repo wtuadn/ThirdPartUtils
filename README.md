@@ -3,7 +3,7 @@
 
 登录：ThirdPartUtils.wxLogin()、ThirdPartUtils.qqLogin()、ThirdPartUtils.weiboLogin()
 
-分享: ThirdPartUtils.wxShare()、ThirdPartUtils.qqShare()、ThirdPartUtils.weiboShare()
+分享：ThirdPartUtils.wxShare()、ThirdPartUtils.qqShare()、ThirdPartUtils.weiboShare()
 
 ### 怎么用
 1、把library目录扔进你的项目里并设置成Lib Module，修改根目录的build.gradle文件
@@ -22,5 +22,7 @@
 不提供gradle直接集成是因为代码很简单，你可以轻松弄懂并修改源码添加自定义功能，使之更适合自己的项目
 
 > 微信sdk根据官方文档自动使用最新版本的
+
 > QQ sdk为v3.2.1 lite
+
 > 微博sdk为v4.1版（使用2.0.6版本的aar）
