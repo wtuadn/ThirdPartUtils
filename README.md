@@ -16,6 +16,7 @@
     }
 ```
 2、把ThirdPartUtils.java文件里标记todo的app key修改成自己项目在这三个平台上的key
+
 3、在使用登录、分享功能前调用一下ThirdPartUtils.init()
 
 #### Tips
