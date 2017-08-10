@@ -249,7 +249,10 @@ public class ThirdPartUtils {
      */
     public static void wxLogin(Context context, final OnLoginListener loginListener) {
         if (!isInited()) return;
-//        if (!isWeixinInstall(context)) return;
+        if (!isWeixinInstall(context)) {
+            onFail(loginListener, null);
+            return;
+        }
         mLoginListener = loginListener;
         final SendAuth.Req req = new SendAuth.Req();
         req.scope = WX_SCOPE;
@@ -262,7 +265,10 @@ public class ThirdPartUtils {
      */
     public static void qqLogin(Activity activity, OnLoginListener loginListener) {
         if (!isInited()) return;
-//        if (!isQQInstall(activity)) return;
+        if (!isQQInstall(activity)) {
+            onFail(loginListener, null);
+            return;
+        }
         final Context context = activity.getApplicationContext();
         final WeakReference<OnLoginListener> loginListenerWeakReference = new WeakReference<>(loginListener);
         IUiListener iUiListener = new IUiListener() {
@@ -308,7 +314,7 @@ public class ThirdPartUtils {
 
                             @Override
                             public void onCancel() {
-                                onFail(loginListenerWeakReference.get(), null);
+                                ThirdPartUtils.onCancel(loginListenerWeakReference.get(), null);
                             }
                         });
                     }
@@ -336,11 +342,14 @@ public class ThirdPartUtils {
      */
     public static void weiboLogin(Activity activity, OnLoginListener loginListener) {
         if (!isInited()) return;
-//        if (!isWeiboInstall(activity)) return;
+        if (!isWeiboInstall(activity)) {
+            onFail(loginListener, null);
+            return;
+        }
         final Context context = activity.getApplicationContext();
         final SsoHandler ssoHandler = new SsoHandler(activity);
         final WeakReference<OnLoginListener> loginListenerWeakReference = new WeakReference<>(loginListener);
-        ssoHandler.authorizeWeb(new WbAuthListener() {
+        ssoHandler.authorize(new WbAuthListener() {
             @Override
             public void onSuccess(Oauth2AccessToken accessToken) {
                 if (accessToken != null && accessToken.isSessionValid()) {
@@ -391,7 +400,7 @@ public class ThirdPartUtils {
 
             @Override
             public void cancel() {
-                ThirdPartUtils.onCancel(loginListenerWeakReference.get(), null);
+                onCancel(loginListenerWeakReference.get(), null);
             }
         });
         mSsoHandler = ssoHandler;
@@ -405,7 +414,10 @@ public class ThirdPartUtils {
     public static void wxShare(Context context, Bitmap bitmap, String title, String text, String url,
                                boolean isWXCircle, OnShareListener onShareListener) {
         if (!isInited()) return;
-//        if (!isWeixinInstall(context)) return;
+        if (!isWeixinInstall(context)) {
+            onFail(null, onShareListener);
+            return;
+        }
         mShareListener = onShareListener;
         WXMediaMessage msg = new WXMediaMessage();
         WXMediaMessage.IMediaObject mediaObject;
@@ -438,7 +450,10 @@ public class ThirdPartUtils {
     public static void qqShare(Activity activity, Bitmap bitmap, String title, String text, String url,
                                boolean isQZone, final OnShareListener onShareListener) {
         if (!isInited()) return;
-        if (isQZone && !isQQInstall(activity)) return;
+        if (!isQQInstall(activity)) {
+            onFail(null, onShareListener);
+            return;
+        }
         String imgUrl = getLocalImgUrl(activity, bitmap);
         IUiListener iUiListener = new IUiListener() {
             @Override
@@ -488,7 +503,10 @@ public class ThirdPartUtils {
      */
     public static void weiboShare(Activity activity, Bitmap bitmap, String title, String text, String url, OnShareListener onShareListener) {
         if (!isInited()) return;
-//        if (!isWeiboInstall(activity)) return;
+//        if (!isWeiboInstall(activity)) {
+//            onFail(null, onShareListener);
+//            return;
+//        }
         mShareListener = onShareListener;
         final WeiboMultiMessage weiboMessage = new WeiboMultiMessage();
         if (!TextUtils.isEmpty(url)) {

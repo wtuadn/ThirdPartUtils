@@ -19,6 +19,8 @@
 
 3、在使用登录、分享功能前调用一下ThirdPartUtils.init()
 
+4、在相应Activity里实现ThirdPartUtils.onActivityResult()方法
+
 #### Tips
 不提供gradle直接集成是因为代码很简单，你可以轻松弄懂并修改源码添加自定义功能，使之更适合自己的项目
 
