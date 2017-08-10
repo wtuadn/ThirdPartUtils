@@ -29,7 +29,7 @@
 
 # ————————  微博 start    ————————
 -keep class com.sina.weibo.sdk.** { *; }
-# ————————  微微博 end    ————————
+# ————————  微博 end    ————————
 
 # ————————  qq start    ————————
 -keep class com.tencent.open.TDialog$*
