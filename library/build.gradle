@@ -20,8 +20,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:25.3.1"
-    compile 'com.squareup.okhttp3:okhttp:3.3.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
-    compile 'com.sina.weibo.sdk:core:2.0.6:openDefaultRelease@aar'
+    compile 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar'
 }
 
