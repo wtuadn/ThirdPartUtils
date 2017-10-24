@@ -17,9 +17,11 @@
 ```
 2、把ThirdPartUtils.java文件里标记todo的app key修改成自己项目在这三个平台上的key
 
-3、在使用登录、分享功能前调用一下ThirdPartUtils.init()
+3、把demo里的整个wxapi包和AndroidManifest里的WXEntryActivity声明copy到自己项目里（注意修改package）
 
 4、在相应Activity里实现ThirdPartUtils.onActivityResult()方法
+
+5、在使用登录、分享功能前调用一下ThirdPartUtils.init()
 
 #### Tips
 不提供gradle直接集成是因为代码很简单，你可以轻松弄懂并修改源码添加自定义功能，使之更适合自己的项目
