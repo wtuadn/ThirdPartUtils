@@ -196,7 +196,7 @@ public class ThirdPartUtils {
                 try {
                     JSONObject obj = new JSONObject(json);
                     String accessToken = obj.optString("access_token");
-                    final String openid = obj.optString("openid");
+                    String openid = obj.optString("openid");
                     Request request = new Request.Builder()
                             .url("https://api.weixin.qq.com/sns/userinfo?" +
                                     "access_token=" + accessToken + "&openid=" + openid)
@@ -214,15 +214,14 @@ public class ThirdPartUtils {
                                 JSONObject obj = new JSONObject(json);
                                 Map<String, Object> map = new HashMap<>();
                                 map.put("platform", "weixin");
-                                map.put("key", openid);
+                                map.put("key", obj.optString("unionid"));
                                 map.put("name", obj.optString("nickname"));
                                 String headimgurl = obj.optString("headimgurl");
                                 if (!TextUtils.isEmpty(headimgurl) && headimgurl.endsWith("/0")) {
                                     headimgurl = headimgurl.substring(0, headimgurl.length() - 1) + "132";
                                 }
                                 map.put("portrait", headimgurl);
-                                int sex = obj.optInt("gender");
-                                map.put("sex", sex);
+                                map.put("sex", obj.optInt("sex"));
                                 onSuccess(mLoginListener, null, map);
                             } catch (Exception e) {
                                 onFail(mLoginListener, null);
@@ -261,9 +260,10 @@ public class ThirdPartUtils {
     }
 
     /**
+     * @param needUnionId 是否以unionid作为唯一标识，需要unionid的话需要发邮件给qq互联平台申请获取权限
      * @see #wxLogin(Context, OnLoginListener)
      */
-    public static void qqLogin(Activity activity, OnLoginListener loginListener) {
+    public static void qqLogin(Activity activity, OnLoginListener loginListener, final boolean needUnionId) {
         if (!isInited()) return;
         if (!isQQInstall(activity)) {
             onFail(loginListener, null);
@@ -277,7 +277,7 @@ public class ThirdPartUtils {
                 if (o instanceof JSONObject) {
                     JSONObject obj = (JSONObject) o;
                     if (obj.optInt("ret", -1) == 0) {
-                        String token = obj.optString(Constants.PARAM_ACCESS_TOKEN);
+                        final String token = obj.optString(Constants.PARAM_ACCESS_TOKEN);
                         String expires = obj.optString(Constants.PARAM_EXPIRES_IN);
                         final String openID = obj.optString(Constants.PARAM_OPEN_ID);
                         //**下面这两步设置很重要,如果没有设置,返回为空**
@@ -288,9 +288,8 @@ public class ThirdPartUtils {
                             public void onComplete(Object o) {
                                 JSONObject obj = (JSONObject) o;
                                 if (obj.optInt("ret", -1) == 0) {
-                                    Map<String, Object> map = new HashMap<>();
+                                    final Map<String, Object> map = new HashMap<>();
                                     map.put("platform", "QQ");
-                                    map.put("key", openID);
                                     map.put("name", obj.optString("nickname"));
                                     map.put("portrait", obj.optString("figureurl_qq_2"));
                                     String sex = obj.optString("gender");
@@ -301,10 +300,48 @@ public class ThirdPartUtils {
                                     } else {
                                         map.put("sex", 0);
                                     }
-                                    onSuccess(loginListenerWeakReference.get(), null, map);
+                                    if (!needUnionId) {
+                                        map.put("key", openID);
+                                        onSuccess(loginListenerWeakReference.get(), null, map);
+                                    } else { //获取unionid
+                                        getUnionId(map);
+                                    }
                                 } else {
                                     onFail(loginListenerWeakReference.get(), null);
                                 }
+                            }
+
+                            private void getUnionId(final Map<String, Object> map) {
+                                Request request = new Request.Builder()
+                                        .url("https://graph.qq.com/oauth2.0/me?access_token=" + token + "&unionid=1")
+                                        .build();
+                                okHttpClient.newCall(request).enqueue(new Callback() {
+
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        onFail(loginListenerWeakReference.get(), null);
+                                    }
+
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        String s = response.body().string();
+                                        try {
+                                            String[] split = s.split(":");
+                                            s = split[split.length - 1];
+                                            split = s.split("\"");
+                                            s = split[1];
+                                            String unionid = s;
+                                            if (TextUtils.isEmpty(unionid)) {
+                                                onFail(loginListenerWeakReference.get(), null);
+                                            } else {
+                                                map.put("key", unionid);
+                                                onSuccess(loginListenerWeakReference.get(), null, map);
+                                            }
+                                        } catch (Exception ignore) {
+                                            onFail(loginListenerWeakReference.get(), null);
+                                        }
+                                    }
+                                });
                             }
 
                             @Override
